@@ -98,12 +98,9 @@ async fn load_list(path: &str) -> Vec<String> {
     f.read_to_string(&mut contents)
         .expect("Could not read file");
 
-    Ok::<Vec<String>, Box<dyn Error>>(
-        contents
-            .as_str()
-            .split("\n")
-            .map(|x| x.to_string())
-            .collect::<Vec<String>>(),
-    )
-    .unwrap()
+    contents
+        .as_str()
+        .split("\n")
+        .map(|x| x.to_string())
+        .collect::<Vec<String>>()
 }
