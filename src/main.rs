@@ -1,12 +1,17 @@
+#![feature(iterator_try_collect)]
+
 use std::error::Error;
 use std::{fmt, fs};
 use std::fmt::Formatter;
-use std::io::Read;
+use std::io::{Read, Write};
 use std::net::Ipv4Addr;
 use std::ops::Deref;
 use std::str::{FromStr, Split};
+use std::sync::Arc;
 use std::time::Duration;
 use anyhow::Context;
+use tokio::io::{AsyncBufReadExt, AsyncReadExt, BufReader};
+use tokio::sync::Mutex;
 
 type Err = anyhow::Error;
 
@@ -69,14 +74,29 @@ impl fmt::Display for Proxy {
 #[tokio::main]
 async fn main() {
 
+
+}
+async fn check_proxy(p: Proxy, timeout: u8, target: &String) -> Result<(), reqwest::Error> {
+    let proxy = reqwest::Proxy::all(p.proxy_type.to_string())?;
+    let client = reqwest::Client::builder()
+        .danger_accept_invalid_certs(true)
+        .proxy(proxy)
+        .build()?;
+    client.get(target)
+        .header("Accept", "text/plain")
+        .header("User-Agent", "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:35.0) Gecko/20100101 Firefox/35.0")
+        .timeout(Duration::from_secs(timeout as u64))
+        .send()
+        .await?
+        .text()
+        .await?;
+    Ok(())
 }
 
-//fn parse_proxy()
+async fn load_list(path: &str) -> (Vec<String>) {
+    let mut f = fs::File::open("input.txt").expect("File not found");
+    let mut contents = String::new();
+    f.read_to_string(&mut contents).expect("Could not read file");
 
-//Returns timeout
-fn check_proxy(proxy: &Proxy, timeout: u32) -> u32 {
-
-
-
-    0
+    Ok::<Vec<String>, Box<dyn Error>>(contents.as_str().split("\n").map(|x| x.to_string()).collect::<Vec<String>>()).unwrap()
 }
