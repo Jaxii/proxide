@@ -20,11 +20,11 @@ pub struct Proxy {
 
 #[derive(Debug, Clone)]
 pub enum ProxyType {
-    socks5,
-    socks4,
-    https,
-    http,
-    none,
+    Socks5,
+    Socks4,
+    Https,
+    Http,
+    None,
 }
 
 impl FromStr for Proxy {
@@ -32,11 +32,11 @@ impl FromStr for Proxy {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut split = s.split(':');
         let schema = match split.nth(0) {
-            Some("http") => ProxyType::http,
-            Some("https") => ProxyType::https,
-            Some("socks4") => ProxyType::socks4,
-            Some("socks5") => ProxyType::socks5,
-            _ => ProxyType::none,
+            Some("http") => ProxyType::Http,
+            Some("https") => ProxyType::Https,
+            Some("socks4") => ProxyType::Socks4,
+            Some("socks5") => ProxyType::Socks5,
+            _ => ProxyType::None,
         };
         let ip: Ipv4Addr = split.next().context("invalid format")?.parse()?;
         let port: u16 = split.next().context("invalid format")?.parse()?;
@@ -51,11 +51,11 @@ impl FromStr for Proxy {
 impl fmt::Display for ProxyType {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
-            ProxyType::socks5 => write!(f, "socks5"),
-            ProxyType::socks4 => write!(f, "socks4"),
-            ProxyType::http => write!(f, "http"),
-            ProxyType::https => write!(f, "https"),
-            ProxyType::none => write!(f, "https"),
+            ProxyType::Socks5 => write!(f, "socks5"),
+            ProxyType::Socks4 => write!(f, "socks4"),
+            ProxyType::Http => write!(f, "http"),
+            ProxyType::Https => write!(f, "https"),
+            ProxyType::None => write!(f, "https"),
         }
     }
 }
