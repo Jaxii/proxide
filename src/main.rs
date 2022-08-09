@@ -91,7 +91,7 @@ async fn check_proxy(p: Proxy, timeout: u8, target: &String) -> Result<(), reqwe
 }
 
 async fn load_list(path: &str) -> (Vec<String>) {
-    let mut path = fs::File::open(path).expect("File not found");
+    let mut f = fs::File::open(path).expect("File not found");
     let mut contents = String::new();
     f.read_to_string(&mut contents).expect("Could not read file");
 
