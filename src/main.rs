@@ -5,14 +5,10 @@ use std::{fmt, fs};
 use std::fmt::Formatter;
 use std::io::{Read, Write};
 use std::net::Ipv4Addr;
-use std::ops::Deref;
-use std::str::{FromStr, Split};
-use std::sync::Arc;
+use std::str::{FromStr};
 use std::time::Duration;
 use anyhow::Context;
 use tokio::io::{AsyncBufReadExt, AsyncReadExt, BufReader};
-use tokio::sync::Mutex;
-
 type Err = anyhow::Error;
 
 #[derive(Debug, Clone)]
@@ -74,6 +70,7 @@ impl fmt::Display for Proxy {
 #[tokio::main]
 async fn main() {
 
+   // load_list("input.txt");
 
 }
 async fn check_proxy(p: Proxy, timeout: u8, target: &String) -> Result<(), reqwest::Error> {
@@ -94,7 +91,7 @@ async fn check_proxy(p: Proxy, timeout: u8, target: &String) -> Result<(), reqwe
 }
 
 async fn load_list(path: &str) -> (Vec<String>) {
-    let mut f = fs::File::open("input.txt").expect("File not found");
+    let mut path = fs::File::open(path).expect("File not found");
     let mut contents = String::new();
     f.read_to_string(&mut contents).expect("Could not read file");
 
