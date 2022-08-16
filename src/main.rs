@@ -9,6 +9,7 @@ use std::str::FromStr;
 use std::time::Duration;
 use std::{fmt, fs};
 use tokio::io::{AsyncBufReadExt, AsyncReadExt, BufReader};
+use nanorand::{Rng, WyRand};
 type Err = anyhow::Error;
 
 #[derive(Debug, Clone)]
@@ -17,6 +18,7 @@ pub struct Proxy {
     pub ip: Ipv4Addr,
     pub port: u16,
 }
+
 
 #[derive(Debug, Clone)]
 pub enum ProxyType {
@@ -51,11 +53,10 @@ impl FromStr for Proxy {
 impl fmt::Display for ProxyType {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
-            ProxyType::Socks5 => write!(f, "socks5"),
-            ProxyType::Socks4 => write!(f, "socks4"),
-            ProxyType::Http => write!(f, "http"),
-            ProxyType::Https => write!(f, "https"),
-            ProxyType::None => write!(f, "https"),
+            Self::Socks5 => write!(f, "socks5"),
+            Self::Socks4 => write!(f, "socks4"),
+            Self::Http => write!(f, "http"),
+            _ => write!(f, "https"),
         }
     }
 }
@@ -68,11 +69,27 @@ impl fmt::Display for Proxy {
 
 #[tokio::main]
 async fn main() {
+    let tasks = [0..10000].into_iter().map(|p| {
+        tokio::spawn(async move {
+            for _ in 0..10000 {
+                // load_list("input.txt");
+                    let ip = generate_random_ip();
+                    let res = check_proxy(&ip, 2, "https://google.com").await;
+                    match res {
+                        Ok(_) => println!("{}", &ip),
+                        _ => {}
+                    }
+            }
+        })
+    }).collect::<Vec<_>>();
+    for task in tasks {
+        task.await.unwrap();
+    }
 
-    // load_list("input.txt");
+
 }
-async fn check_proxy(p: Proxy, timeout: u8, target: &String) -> Result<(), reqwest::Error> {
-    let proxy = reqwest::Proxy::all(p.proxy_type.to_string())?;
+async fn check_proxy(p: &Ipv4Addr, timeout: u8, target: &str) -> Result<(), reqwest::Error> {
+    let proxy = reqwest::Proxy::all("https://".to_owned()+ &*p.to_string())?;
     let client = reqwest::Client::builder()
         .danger_accept_invalid_certs(true)
         .proxy(proxy)
@@ -103,4 +120,16 @@ async fn load_list(path: &str) -> Vec<String> {
         .split("\n")
         .map(|x| x.to_string())
         .collect::<Vec<String>>()
+}
+
+fn generate_random_ip() -> Ipv4Addr {
+
+    return Ipv4Addr::new(randu8(), randu8(), randu8(), randu8());
+
+}
+
+fn randu8() -> u8 {
+    let mut rng = WyRand::new();
+    rng.generate::<u8>()
+
 }
