@@ -10,6 +10,9 @@ use std::time::Duration;
 use std::{fmt, fs};
 use tokio::io::{AsyncBufReadExt, AsyncReadExt, BufReader};
 use nanorand::{Rng, WyRand};
+use tokio::runtime;
+use tokio::runtime::Builder;
+
 type Err = anyhow::Error;
 
 #[derive(Debug, Clone)]
@@ -69,26 +72,30 @@ impl fmt::Display for Proxy {
 
 #[tokio::main]
 async fn main() {
-    let tasks = [0..10000].into_iter().map(|p| {
-        tokio::spawn(async move {
-            for _ in 0..10000 {
-                // load_list("input.txt");
-                    let ip = generate_random_ip();
-                    let res = check_proxy(&ip, 2, "https://google.com").await;
-                    match res {
-                        Ok(_) => println!("{}", &ip),
-                        _ => {}
-                    }
-            }
-        })
-    }).collect::<Vec<_>>();
-    for task in tasks {
-        task.await.unwrap();
+
+    let runtime = Builder::new_multi_thread()
+        .worker_threads(1)
+        .enable_all()
+        .build()
+        .unwrap();
+    //do other work
+
+    let mut handles = Vec::with_capacity(10);
+    for i in 0..10 {
+
+            let ip = generate_random_ip();
+            handles.push(runtime.spawn( check_proxy(ip.clone(), 5, "https://google.com")));
+    }
+
+    for handle in handles {
+        // The `spawn` method returns a `JoinHandle`. A `JoinHandle` is
+        // a future, so we can wait for it using `block_on`.
+runtime.spawn(handle).await.expect("test").expect("TODO: panic message").expect("TODO: panic message");
     }
 
 
 }
-async fn check_proxy(p: &Ipv4Addr, timeout: u8, target: &str) -> Result<(), reqwest::Error> {
+async fn check_proxy(p: Ipv4Addr, timeout: u8, target: &str) -> Result<(), reqwest::Error> {
     let proxy = reqwest::Proxy::all("https://".to_owned()+ &*p.to_string())?;
     let client = reqwest::Client::builder()
         .danger_accept_invalid_certs(true)
