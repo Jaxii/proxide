@@ -11,7 +11,6 @@ use std::{fmt, fs};
 use tokio::io::{AsyncBufReadExt, AsyncReadExt, BufReader};
 use nanorand::{Rng, WyRand};
 use tokio::runtime;
-use tokio::runtime::Builder;
 
 type Err = anyhow::Error;
 
@@ -73,29 +72,12 @@ impl fmt::Display for Proxy {
 #[tokio::main]
 async fn main() {
 
-    let runtime = Builder::new_multi_thread()
-        .worker_threads(1)
-        .enable_all()
-        .build()
-        .unwrap();
-    //do other work
 
-    let mut handles = Vec::with_capacity(10);
-    for i in 0..10 {
-
-            let ip = generate_random_ip();
-            handles.push(runtime.spawn( check_proxy(ip.clone(), 5, "https://google.com")));
-    }
-
-    for handle in handles {
-        // The `spawn` method returns a `JoinHandle`. A `JoinHandle` is
-        // a future, so we can wait for it using `block_on`.
-runtime.spawn(handle).await.expect("test").expect("TODO: panic message").expect("TODO: panic message");
-    }
-
+        let ip = generate_random_ip();
+        check_proxy(&ip, 5, "https://google.com")
 
 }
-async fn check_proxy(p: Ipv4Addr, timeout: u8, target: &str) -> Result<(), reqwest::Error> {
+async fn check_proxy(p: &Ipv4Addr, timeout: u8, target: &str) -> Result<(), reqwest::Error> {
     let proxy = reqwest::Proxy::all("https://".to_owned()+ &*p.to_string())?;
     let client = reqwest::Client::builder()
         .danger_accept_invalid_certs(true)
