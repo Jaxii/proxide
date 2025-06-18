@@ -1,14 +1,12 @@
 [package]
 name = "proxide"
-version = "0.1.0"
-edition = "2021"
+version = "0.2.0"
+edition = "2024"
 authors = ["github.com/Jaxii"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
-tokio = { version = "1.34.0", features = ['full'] }
-rayon = "1.8.0"
-reqwest = "0.11.22"
-anyhow = "1.0.75"
-nanorand = "0.7.0"
+async-trait = "0.1.88"
+clap = "4.5.38"
+futures = "0.3.31"
+reqwest = "0.12.15"
+tokio = { version = "1.45.0", features = ["full"] }
