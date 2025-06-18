@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use reqwest::{Client, Proxy};
+use reqwest::{Client, Proxy, Response};
 use std::time::Duration;
 
 use crate::common::{
@@ -25,7 +25,6 @@ impl ProxyChecker for HttpProxyChecker {
     }
 
     async fn check(&self, proxy: &ProxyConfig) -> Result<(), ProxyError> {
-
         println!("Calling check");
 
         let proxy_url = match proxy.proxy_type {
@@ -53,42 +52,19 @@ impl ProxyChecker for HttpProxyChecker {
 
         println!("Verify URL: {}", self.verify_url);
 
-        // Try to make a request through the proxy
-        let response = client
-            .get(&self.verify_url)
-            .send()
-            .await
-            .map_err(|e| {
-                if e.is_timeout() {
+        let _response = match client.get(&self.verify_url).send().await {
+            Ok(resp) => resp,
+            Err(e) => {
+                return Err(if e.is_timeout() {
                     ProxyError::Timeout
                 } else if e.is_connect() {
                     ProxyError::ConnectionFailed(e)
                 } else {
                     ProxyError::ProtocolError(e.to_string())
-                }
-            })?;
+                });
+            }
+        };
 
-
-            println!("Did response end?");
-
-            println!("Response: {}", response.status());
-
-        if response.status().is_success() {
-
-            println!("Response successful with: {}", proxy.address);
-
-            Ok(())
-
-        } else if response.status().as_u16() == 407 {
-            Err(ProxyError::AuthenticationFailed)
-        } else {
-
-
-            println!("Response failed with IP: {}", proxy.address);
-            Err(ProxyError::InvalidResponse(format!(
-                "Unexpected status code: {}",
-                response.status()
-            )))
-        }
+        Ok(())
     }
 }
