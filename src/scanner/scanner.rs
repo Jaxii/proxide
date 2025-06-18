@@ -83,15 +83,16 @@ impl Scanner {
         // Initialize all the proxy checkers
         let mut checkers: Vec<Box<dyn ProxyChecker + Send + Sync>> = Vec::new();
 
-        let verify_url = config.verify_url
+        let verify_url = config
+            .verify_url
             .as_ref()
             .cloned()
             .unwrap_or_else(|| "http://google.com".to_string());
-        
+
         // Always add HTTP checker if we're checking HTTP/HTTPS types
-        if config.check_all_types || 
-           config.preferred_types.contains(&ProxyType::Http) || 
-           config.preferred_types.contains(&ProxyType::Https) 
+        if config.check_all_types
+            || config.preferred_types.contains(&ProxyType::Http)
+            || config.preferred_types.contains(&ProxyType::Https)
         //    ||
         //    config.preferred_types.is_empty() // Default to checking all if none specified`
         {
@@ -153,4 +154,3 @@ impl Scanner {
         engine.scan_all(self, proxies).await
     }
 }
-

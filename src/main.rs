@@ -6,7 +6,10 @@ use std::str::FromStr;
 use std::time::Duration;
 
 use proxide::{
-    common::{config::ScannerConfig, types::{ProxyConfig, ProxyType}},
+    common::{
+        config::ScannerConfig,
+        types::{ProxyConfig, ProxyType},
+    },
     scanner::Scanner,
 };
 
@@ -77,11 +80,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 fn build_scanner_from_args(matches: &ArgMatches) -> Result<Scanner, Box<dyn std::error::Error>> {
-    let concurrency = matches.get_one::<String>("concurrency")
+    let concurrency = matches
+        .get_one::<String>("concurrency")
         .unwrap_or(&"100".to_string())
         .parse::<usize>()?;
 
-    let timeout = matches.get_one::<String>("timeout")
+    let timeout = matches
+        .get_one::<String>("timeout")
         .unwrap_or(&"10".to_string())
         .parse::<u64>()?;
 
@@ -112,7 +117,9 @@ fn build_scanner_from_args(matches: &ArgMatches) -> Result<Scanner, Box<dyn std:
     Ok(builder.build())
 }
 
-fn load_proxies_from_args(matches: &ArgMatches) -> Result<Vec<ProxyConfig>, Box<dyn std::error::Error>> {
+fn load_proxies_from_args(
+    matches: &ArgMatches,
+) -> Result<Vec<ProxyConfig>, Box<dyn std::error::Error>> {
     let mut proxies = Vec::new();
 
     if let Some(input_file) = matches.get_one::<String>("input") {
@@ -170,12 +177,19 @@ fn load_proxies_from_args(matches: &ArgMatches) -> Result<Vec<ProxyConfig>, Box<
     Ok(proxies)
 }
 
+// TODO Improve this
 fn report_results(
     matches: &ArgMatches,
     results: &[proxide::scanner::ScanResult],
 ) -> Result<(), Box<dyn std::error::Error>> {
     for result in results {
-        println!("IP: {}:{}, Latency: {:#?}, Working: {}", result.address.ip(), result.address.port(), result.latency, result.is_working);
+        println!(
+            "IP: {}:{}, Latency: {:#?}, Working: {}",
+            result.address.ip(),
+            result.address.port(),
+            result.latency,
+            result.is_working
+        );
     }
 
     Ok(())

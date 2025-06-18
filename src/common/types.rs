@@ -1,7 +1,6 @@
 use std::net::{IpAddr, SocketAddr};
 use std::time::Duration;
 
-
 /// Supported proxy types
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ProxyType {

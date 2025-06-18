@@ -1,5 +1,8 @@
+use crate::common::{
+    errors::ProxyError,
+    types::{ProxyConfig, ProxyType},
+};
 use async_trait::async_trait;
-use crate::common::{errors::ProxyError, types::{ProxyConfig, ProxyType}};
 
 mod http;
 // mod socks;

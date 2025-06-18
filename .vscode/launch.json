@@ -17,7 +17,7 @@
                 }
             },
             "args": [
-                "-i", "proxies.txt",
+                "-i", "/home/jax/Development/Personal/proxide/example/proxies.txt",
                 "-c", "10",
                 "-t", "5"
             ],

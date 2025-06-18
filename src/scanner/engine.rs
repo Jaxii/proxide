@@ -1,7 +1,6 @@
-
+use futures::stream::{self, StreamExt};
 use std::sync::Arc;
 use tokio::sync::Semaphore;
-use futures::stream::{self, StreamExt};
 
 use crate::common::types::ProxyConfig;
 use crate::scanner::scanner::{ScanResult, Scanner};
@@ -17,11 +16,7 @@ impl ScanEngine {
         }
     }
 
-    pub async fn scan_all(
-        &self,
-        scanner: &Scanner,
-        proxies: Vec<ProxyConfig>,
-    ) -> Vec<ScanResult> {
+    pub async fn scan_all(&self, scanner: &Scanner, proxies: Vec<ProxyConfig>) -> Vec<ScanResult> {
         stream::iter(proxies)
             .map(|proxy| {
                 let scanner = scanner.clone();

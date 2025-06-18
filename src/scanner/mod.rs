@@ -1,5 +1,5 @@
-mod scanner;
 mod engine;
+mod scanner;
 
-pub use scanner::{Scanner, ScanResult, ScannerBuilder};
 pub use engine::ScanEngine;
+pub use scanner::{ScanResult, Scanner, ScannerBuilder};

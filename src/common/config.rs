@@ -19,7 +19,7 @@ impl Default for ScannerConfig {
             retry_count: 2,
             check_all_types: false,
             preferred_types: vec![ProxyType::Http, ProxyType::Socks5],
-            verify_url: Some(String::from("https://www.google.com")),
+            verify_url: Some(String::from("http://www.google.com")),
         }
     }
 }
