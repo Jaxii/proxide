@@ -1,0 +1,72 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug Proxide",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=proxide",
+                    "--package=proxide"
+                ],
+                "filter": {
+                    "name": "proxide",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-i", "proxies.txt",
+                "-c", "10",
+                "-t", "5"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "sourceLanguages": ["rust"]
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug Proxide (Demo Mode)",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=proxide",
+                    "--package=proxide"
+                ],
+                "filter": {
+                    "name": "proxide",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "-c", "5",
+                "-t", "3"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "sourceLanguages": ["rust"]
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug Proxide (Custom Args)",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=proxide",
+                    "--package=proxide"
+                ],
+                "filter": {
+                    "name": "proxide",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "sourceLanguages": ["rust"]
+        }
+    ]
+}
